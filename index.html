@@ -1,82 +1,98 @@
-</html> 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            background: url('./bgc.png') no-repeat;
-            background-size: 100%;
-            font-family: '宋体';
-        }
-
-        a {
-            text-decoration: none;
-        }
-
-        .login {
-            width: 500px;
-            height: 300px;
-            background-color: rgba(150,143,172,0.3);
-            margin: 150px 100px;
-            text-align: center;
-            padding: 30px;
-            border-radius: 20px;
-            box-shadow: 2px 2px 5px #000; /*阴影效果*/
-        }
-
-        .fstInput, .sndInput {
-            width: 250px;
-            height: 25px;
-            color: rgb(61,54,64);
-            text-align: center;
-            outline: none;
-            margin: 15px;
-            background-color: rgba(0, 0, 0, 0.0);
-            border: 0;
-            border-bottom: 2px solid black;
-            transition: 1s; /*宽度变化的过度时间*/
-        }
-
-        /* 过度动画，点击输入账号密码框之后会使输入框的下边框扩大 */
-        .fstInput:focus, .sndInput:focus {
-            width: 300px;
-            border-bottom: 2px solid gray;
-        }
-
-        .register {
-            display: block;
-            margin-top: 10px;            
-        }
-
-        .btn {
-            width: 100px;
-            height: 30px;
-            border-radius: 15px;
-            border: 0;
-            background-color: rgb(153,139,152);
-        }
-    </style>
+    <title>内容管理</title>
 </head>
 <body>
-    <div class="login">
-        <form action="">
-            <h2>遇事不决，可问春风</h2>
-            <span><input class="fstInput" type="text" placeholder="请输入账号"></span><br>
-            <span><input class="sndInput" type="password" placeholder="请输入密码"></span><br>
-            <span class="register">还没有账号？<a href="">立即注册</a></span><br>
-            <span><input class="btn" type="button" value="登陆"></span>
-        </form>
+    <h1>内容管理</h1>
+    
+    <label for="input-text">内容:</label>
+    <input type="text" id="input-text">
+    <button onclick="addContent()">添加</button>
 
-    </div>
+    <label for="search-text">查询:</label>
+    <input type="text" id="search-text">
+    <button onclick="searchContent()">查询</button>
+    
+    <ul id="content-list">
+        <!-- 动态添加的内容将在这里显示 -->
+    </ul>
+    
+    <script>
+        // 数据存储在数组中
+        var contentArray = [];
+
+        function addContent() {
+            var inputElement = document.getElementById("input-text");
+            var content = inputElement.value.trim();
+
+            if (content !== "") {
+                // 将内容添加到数组
+                contentArray.push(content);
+
+                // 清空输入框
+                inputElement.value = "";
+
+                // 更新内容列表
+                updateContentList();
+            }
+        }
+
+        function deleteContent(index) {
+            // 从数组中删除指定索引的内容
+            contentArray.splice(index, 1);
+
+            // 更新内容列表
+            updateContentList();
+        }
+
+        function searchContent() {
+            var searchInputElement = document.getElementById("search-text");
+            var searchTerm = searchInputElement.value.trim();
+
+            if (searchTerm !== "") {
+                var searchResults = contentArray.filter(function(content) {
+                    // 使用 indexOf() 检查内容中是否包含搜索关键字
+                    return content.indexOf(searchTerm) !== -1;
+                });
+
+                // 更新内容列表，只显示搜索结果
+                updateContentList(searchResults);
+            } else {
+                // 搜索关键字为空，显示全部内容
+                updateContentList(contentArray);
+            }
+        }
+
+        function updateContentList(contents) {
+            var contentListElement = document.getElementById("content-list");
+            contentListElement.innerHTML = "";
+
+            // 如果未传递内容，则使用全部内容数组
+            if (!contents) {
+                contents = contentArray;
+            }
+
+            // 遍历内容数组，动态创建列表项
+            for (var i = 0; i < contents.length; i++) {
+                var content = contents[i];
+
+                var listItemElement = document.createElement("li");
+                listItemElement.textContent = content;
+
+                var deleteButton = document.createElement("button");
+                deleteButton.textContent = "删除";
+                deleteButton.setAttribute("data-index", i);
+                deleteButton.onclick = function() {
+                    deleteContent(this.getAttribute("data-index"));
+                };
+
+                listItemElement.appendChild(deleteButton);
+
+                contentListElement.appendChild(listItemElement);
+            }
+        }
+    </script>
 </body>
 </html>
